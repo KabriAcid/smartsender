@@ -20,9 +20,9 @@ export function ConversationItem({
         <motion.button
             whileHover={{ x: 4 }}
             onClick={onClick}
-            className={`w-full px-4 py-3 flex items-center gap-3 border-b border-border transition-colors ${isActive
-                    ? 'bg-muted'
-                    : 'hover:bg-muted/50 active:bg-muted'
+            className={`w-full px-4 py-3 flex items-center gap-3 border-b border-border transition-all cursor-pointer ${isActive
+                ? 'bg-muted'
+                : 'hover:bg-muted/50 active:bg-muted'
                 }`}
         >
             {/* Avatar */}
@@ -55,8 +55,8 @@ export function ConversationItem({
                             {otherParticipant.department}
                         </p>
                         <p className={`text-sm truncate ${unreadCount > 0
-                                ? 'text-foreground font-medium'
-                                : 'text-muted-foreground'
+                            ? 'text-foreground font-medium'
+                            : 'text-muted-foreground'
                             }`}>
                             {truncateText(lastMessagePreview, 40)}
                         </p>
