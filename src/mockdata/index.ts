@@ -3,3 +3,4 @@
 export { mockStaff, mockCredentials, demoStaff } from './staff';
 export { mockFiles, mockActivities } from './files';
 export { mockDepartments, mockInstitutions } from './departments';
+export { mockConversations, mockMessages } from './conversations';

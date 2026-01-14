@@ -4,7 +4,8 @@ import { ROUTES } from '@/utils/constants';
 
 import LoginPage from '@/pages/LoginPage';
 import Dashboard from '@/pages/Dashboard';
-import FilesPage from '@/pages/FilesPage';
+import StaffPage from '@/pages/StaffPage';
+import ConversationPage from '@/pages/ConversationPage';
 import ProfilePage from '@/pages/ProfilePage';
 import NotFound from '@/pages/NotFound';
 
@@ -24,10 +25,18 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.FILES}
+        path={ROUTES.STAFF}
         element={
           <RequireAuth>
-            <FilesPage />
+            <StaffPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={ROUTES.CONVERSATION}
+        element={
+          <RequireAuth>
+            <ConversationPage />
           </RequireAuth>
         }
       />

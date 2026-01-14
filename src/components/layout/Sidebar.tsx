@@ -6,15 +6,14 @@ import { ROUTES } from '@/utils/constants';
 import { Logo } from '@/components/Logo';
 import {
   LayoutDashboard,
-  FolderOpen,
+  Users,
   User,
   LogOut,
-  Shield
 } from 'lucide-react';
 
 const navItems = [
   { path: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
-  { path: ROUTES.FILES, label: 'Files', icon: FolderOpen },
+  { path: ROUTES.STAFF, label: 'Staff', icon: Users },
   { path: ROUTES.PROFILE, label: 'Profile', icon: User },
 ];
 

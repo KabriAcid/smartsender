@@ -5,6 +5,8 @@ export const STORAGE_KEYS = {
   STAFF_DATA: 'smartsender_staff',
   FILES_DATA: 'smartsender_files',
   ACTIVITY_DATA: 'smartsender_activity',
+  CONVERSATIONS_DATA: 'smartsender_conversations',
+  MESSAGES_DATA: 'smartsender_messages',
 } as const;
 
 export const FILE_TYPE_ICONS: Record<string, string> = {
@@ -43,6 +45,7 @@ export const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 export const ROUTES = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
-  FILES: '/files',
+  STAFF: '/staff',
   PROFILE: '/profile',
+  CONVERSATION: '/conversation/:id',
 } as const;

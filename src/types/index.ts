@@ -94,3 +94,49 @@ export interface DashboardStats {
   storageUsed: number; // in bytes
   recentActivity: FileActivity[];
 }
+
+// Messaging and Chat Types
+export type MessageMediaType = 'image' | 'video' | 'document' | 'file';
+
+export interface MessageMedia {
+  id: string;
+  type: MessageMediaType;
+  url: string;
+  name: string;
+  size: number;
+  mimeType: string;
+  thumbnail?: string; // for images and videos
+  duration?: number; // for videos
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar?: string;
+  content: string;
+  media?: MessageMedia[];
+  sentAt: string;
+  readAt?: string;
+  isEdited: boolean;
+  editedAt?: string;
+}
+
+export interface Conversation {
+  id: string;
+  participantIds: string[];
+  participants: Staff[];
+  lastMessage?: Message;
+  unreadCount: number;
+  createdAt: string;
+  updatedAt: string;
+  isArchived: boolean;
+}
+
+export interface ConversationListItem extends Omit<Conversation, 'participants'> {
+  otherParticipant: Staff; // The other person in the conversation (excluding current user)
+  lastMessagePreview: string;
+  isOnline?: boolean;
+}
+

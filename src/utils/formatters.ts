@@ -89,3 +89,63 @@ export function truncateText(text: string, maxLength: number): string {
 export function getInitials(firstName: string, lastName: string): string {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 }
+
+/**
+ * Format message time (e.g., "2:30 PM", "Yesterday", "Jan 10")
+ */
+export function formatMessageTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+
+  // Same day - show time only
+  if (diffInDays === 0) {
+    return date.toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit', hour12: true });
+  }
+
+  // Yesterday
+  if (diffInDays === 1) {
+    return 'Yesterday';
+  }
+
+  // This week
+  if (diffInDays < 7) {
+    return date.toLocaleDateString('en-NG', { weekday: 'short' });
+  }
+
+  // This year
+  return date.toLocaleDateString('en-NG', { month: 'short', day: 'numeric' });
+}
+
+/**
+ * Format message date header (e.g., "Today", "Monday, Jan 10, 2025")
+ */
+export function formatMessageDateHeader(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (diffInDays === 0) {
+    return 'Today';
+  }
+
+  if (diffInDays === 1) {
+    return 'Yesterday';
+  }
+
+  return date.toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+/**
+ * Get media icon emoji based on media type
+ */
+export function getMediaIcon(mediaType: string): string {
+  const icons: Record<string, string> = {
+    image: '🖼️',
+    video: '🎬',
+    document: '📄',
+    file: '📎',
+  };
+  return icons[mediaType] || '📎';
+}
+
