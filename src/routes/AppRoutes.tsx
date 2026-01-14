@@ -14,7 +14,7 @@ export function AppRoutes() {
     <Routes>
       {/* Public Routes */}
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-      
+
       {/* Protected Routes */}
       <Route
         path={ROUTES.DASHBOARD}
@@ -51,7 +51,7 @@ export function AppRoutes() {
 
       {/* Redirects */}
       <Route path="/" element={<Navigate to={ROUTES.LOGIN} replace />} />
-      
+
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>

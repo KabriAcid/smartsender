@@ -27,17 +27,17 @@ export interface Institution {
   location: string;
 }
 
-export type FileType = 
-  | 'pdf' 
-  | 'doc' 
-  | 'docx' 
-  | 'xls' 
-  | 'xlsx' 
-  | 'ppt' 
+export type FileType =
+  | 'pdf'
+  | 'doc'
+  | 'docx'
+  | 'xls'
+  | 'xlsx'
+  | 'ppt'
   | 'pptx'
-  | 'jpg' 
-  | 'jpeg' 
-  | 'png' 
+  | 'jpg'
+  | 'jpeg'
+  | 'png'
   | 'webp'
   | 'mp4'
   | 'mp3'
