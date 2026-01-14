@@ -9,7 +9,7 @@ import {
 
 const navItems = [
     { path: ROUTES.STAFF, icon: Users, label: 'Staff' },
-    { path: ROUTES.DASHBOARD, icon: LayoutDashboard, label: 'History' },
+    { path: ROUTES.HISTORY, icon: LayoutDashboard, label: 'History' },
     { path: ROUTES.PROFILE, icon: User, label: 'Profile' },
 ];
 
@@ -28,8 +28,8 @@ export function BottomNav() {
                             <Link
                                 to={item.path}
                                 className={`relative flex flex-col items-center justify-center gap-1 py-3 px-4 transition-colors duration-200 ${isActive
-                                        ? 'text-foreground'
-                                        : 'text-muted-foreground'
+                                    ? 'text-foreground'
+                                    : 'text-muted-foreground'
                                     }`}
                             >
                                 {isActive && (

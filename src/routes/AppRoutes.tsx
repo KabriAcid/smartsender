@@ -3,7 +3,7 @@ import { RequireAuth } from '@/features/auth';
 import { ROUTES } from '@/utils/constants';
 
 import LoginPage from '@/pages/LoginPage';
-import Dashboard from '@/pages/Dashboard';
+import HistoryPage from '@/pages/HistoryPage';
 import StaffPage from '@/pages/StaffPage';
 import ConversationPage from '@/pages/ConversationPage';
 import ProfilePage from '@/pages/ProfilePage';
@@ -17,10 +17,10 @@ export function AppRoutes() {
 
       {/* Protected Routes */}
       <Route
-        path={ROUTES.DASHBOARD}
+        path={ROUTES.HISTORY}
         element={
           <RequireAuth>
-            <Dashboard />
+            <HistoryPage />
           </RequireAuth>
         }
       />

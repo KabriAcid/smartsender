@@ -124,6 +124,12 @@ export default function StaffPage() {
         navigate(`/conversation/${conversationId}`);
     };
 
+    // Get staff members who already have conversations
+    const staffWithConversations = new Set(conversations.map(c => c.otherParticipant.id));
+
+    // Get staff members without conversations
+    const staffWithoutConversations = allStaff.filter(s => !staffWithConversations.has(s.id));
+
     if (isLoading) {
         return (
             <DashboardLayout>
@@ -153,36 +159,75 @@ export default function StaffPage() {
                     </div>
                 </motion.div>
 
-                {/* Content area - conversations list */}
-                <div className="flex-1 overflow-hidden flex">
-                    {/* Conversations list */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="flex-1 flex flex-col"
-                    >
-                        {filteredConversations.length === 0 ? (
+                {/* Content area - staff list with conversations at top */}
+                <div className="flex-1 overflow-y-auto">
+                    {/* Show existing conversations first */}
+                    {filteredConversations.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                        >
+                            {filteredConversations.map((conversation) => (
+                                <ConversationItem
+                                    key={conversation.id}
+                                    conversation={conversation}
+                                    onClick={() => handleOpenConversation(conversation.id)}
+                                />
+                            ))}
+                        </motion.div>
+                    )}
+
+                    {/* Show available staff members below */}
+                    {filteredStaff.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                        >
+                            {filteredStaff.map((staffMember) => (
+                                <motion.button
+                                    key={staffMember.id}
+                                    whileHover={{ x: 4 }}
+                                    onClick={() => handleStartConversation(staffMember.id)}
+                                    className="w-full px-4 py-3 flex items-center gap-3 border-b border-border hover:bg-muted/50 active:bg-muted transition-colors text-left cursor-pointer"
+                                >
+                                    {/* Avatar */}
+                                    <div className="relative flex-shrink-0">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center text-primary-foreground font-semibold">
+                                            {getInitials(staffMember.firstName, staffMember.lastName)}
+                                        </div>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-medium text-foreground">
+                                            {staffMember.firstName} {staffMember.lastName}
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground">
+                                            {staffMember.department}
+                                        </p>
+                                    </div>
+
+                                    {/* CTA */}
+                                    <MessageSquare className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                                </motion.button>
+                            ))}
+                        </motion.div>
+                    )}
+
+                    {/* Empty state when no conversations and no staff match search */}
+                    {filteredConversations.length === 0 && filteredStaff.length === 0 && (
+                        <div className="h-full flex items-center justify-center">
                             <EmptyState
                                 icon={MessageSquare}
-                                title="No messages"
+                                title={searchQuery ? 'No results' : 'No colleagues'}
                                 description={
                                     searchQuery
-                                        ? 'No results found.'
-                                        : 'Select a colleague to start messaging'
+                                        ? 'Try a different search.'
+                                        : 'No staff members available'
                                 }
                             />
-                        ) : (
-                            <div className="overflow-y-auto flex-1">
-                                {filteredConversations.map((conversation) => (
-                                    <ConversationItem
-                                        key={conversation.id}
-                                        conversation={conversation}
-                                        onClick={() => handleOpenConversation(conversation.id)}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </motion.div>
+                        </div>
+                    )}
                 </div>
             </div>
         </DashboardLayout>

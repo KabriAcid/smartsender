@@ -44,7 +44,7 @@ export const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 export const ROUTES = {
   LOGIN: '/login',
-  DASHBOARD: '/dashboard',
+  HISTORY: '/history',
   STAFF: '/staff',
   PROFILE: '/profile',
   CONVERSATION: '/conversation/:id',

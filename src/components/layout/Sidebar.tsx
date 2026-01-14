@@ -13,7 +13,7 @@ import {
 
 const navItems = [
   { path: ROUTES.STAFF, label: 'Staff', icon: Users },
-  { path: ROUTES.DASHBOARD, label: 'History', icon: LayoutDashboard },
+  { path: ROUTES.HISTORY, label: 'History', icon: LayoutDashboard },
   { path: ROUTES.PROFILE, label: 'Profile', icon: User },
 ];
 
