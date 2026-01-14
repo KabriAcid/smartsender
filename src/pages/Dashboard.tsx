@@ -1,45 +1,30 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/layout';
-import { LoadingPage } from '@/components/feedback';
-import { StatCard } from '@/features/staff';
-import { FileCard, RecentFiles } from '@/features/files';
+import { LoadingSpinner, EmptyState } from '@/components/feedback';
 import { useAuth } from '@/hooks/useAuth';
-import { getDashboardStats, getReceivedFiles, downloadFile } from '@/api/files.api';
-import { DashboardStats, SharedFile } from '@/types';
-import { formatFileSize } from '@/utils/formatters';
-import { 
-  FolderOpen, 
-  Download, 
-  Upload, 
-  HardDrive,
-  ArrowRight 
+import { getMyFiles, downloadFile } from '@/api/files.api';
+import { SharedFile } from '@/types';
+import { formatFileSize, formatDateTime } from '@/utils/formatters';
+import {
+  Download,
+  History
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '@/utils/constants';
 
 export default function Dashboard() {
   const { staff } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [recentFiles, setRecentFiles] = useState<SharedFile[]>([]);
+  const [sharedFiles, setSharedFiles] = useState<SharedFile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
       if (!staff) return;
 
       try {
-        const [statsRes, filesRes] = await Promise.all([
-          getDashboardStats(staff.id),
-          getReceivedFiles(staff.id),
-        ]);
-
-        if (statsRes.success && statsRes.data) {
-          setStats(statsRes.data);
-        }
-
-        if (filesRes.success && filesRes.data) {
-          setRecentFiles(filesRes.data.slice(0, 4));
+        const res = await getMyFiles();
+        if (res.success && res.data) {
+          setSharedFiles(res.data);
         }
       } finally {
         setIsLoading(false);
@@ -52,17 +37,17 @@ export default function Dashboard() {
   const handleDownload = async (file: SharedFile) => {
     if (!staff) return;
     await downloadFile(file.id, `${staff.firstName} ${staff.lastName}`);
-    // Refresh data
-    const filesRes = await getReceivedFiles(staff.id);
-    if (filesRes.success && filesRes.data) {
-      setRecentFiles(filesRes.data.slice(0, 4));
-    }
   };
+
+  const filteredFiles = sharedFiles.filter(file =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    file.senderName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (isLoading) {
     return (
       <DashboardLayout>
-        <LoadingPage text="Loading dashboard..." />
+        <LoadingSpinner />
       </DashboardLayout>
     );
   }
@@ -70,101 +55,88 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       {/* Header */}
-      <div className="mb-8">
-        <motion.h1
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-bold text-foreground"
-        >
-          Welcome back, {staff?.firstName}
-        </motion.h1>
-        <motion.p
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-card border-b border-border p-6 mb-6"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <History className="w-8 h-8 text-primary" />
+          <h1 className="text-3xl font-bold text-foreground">Sharing History</h1>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          View all files you've shared with staff members across your institution
+        </p>
+      </motion.div>
+
+      {/* Search */}
+      <div className="px-6 mb-6">
+        <input
+          type="text"
+          placeholder="Search by file name or recipient..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg bg-muted text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+        />
+      </div>
+
+      {/* Shared Files List */}
+      {filteredFiles.length === 0 ? (
+        <div className="px-6">
+          <EmptyState
+            icon={History}
+            title="No shared files"
+            description={searchQuery
+              ? 'No files match your search.'
+              : 'You haven\'t shared any files yet.'}
+          />
+        </div>
+      ) : (
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-muted-foreground mt-1"
+          className="px-6 space-y-3"
         >
-          Here's an overview of your file sharing activity
-        </motion.p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          title="Total Files"
-          value={stats?.totalFiles || 0}
-          icon={FolderOpen}
-          subtitle="In your workspace"
-        />
-        <StatCard
-          title="Files Received"
-          value={stats?.totalReceived || 0}
-          icon={Download}
-          trend={{ value: 12, isPositive: true }}
-        />
-        <StatCard
-          title="Files Sent"
-          value={stats?.totalSent || 0}
-          icon={Upload}
-        />
-        <StatCard
-          title="Storage Used"
-          value={formatFileSize(stats?.storageUsed || 0)}
-          icon={HardDrive}
-          subtitle="Total file size"
-        />
-      </div>
-
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Files */}
-        <div className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">Recent Files</h2>
-            <Link
-              to={ROUTES.FILES}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          {filteredFiles.map((file, idx) => (
+            <motion.div
+              key={file.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-colors"
             >
-              View all
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">
+                    {file.category === 'image' && '🖼️'}
+                    {file.category === 'video' && '🎬'}
+                    {file.category === 'document' && '📄'}
+                    {file.category === 'archive' && '📦'}
+                    {!['image', 'video', 'document', 'archive'].includes(file.category) && '📎'}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-foreground truncate">{file.name}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {formatFileSize(file.size)} • {file.category}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground ml-11">
+                  Shared to {file.recipientIds.length} recipient{file.recipientIds.length !== 1 ? 's' : ''} on {formatDateTime(file.uploadedAt)}
+                </p>
+              </div>
 
-          {recentFiles.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {recentFiles.map((file, index) => (
-                <motion.div
-                  key={file.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <FileCard
-                    file={file}
-                    onDownload={handleDownload}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="card-elevated p-8 text-center">
-              <FolderOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground">No files received yet</p>
-            </div>
-          )}
-        </div>
-
-        {/* Activity Feed */}
-        <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h2>
-          <div className="card-elevated p-4">
-            <RecentFiles
-              activities={stats?.recentActivity || []}
-              isLoading={isLoading}
-            />
-          </div>
-        </div>
-      </div>
+              <button
+                onClick={() => handleDownload(file)}
+                className="ml-4 p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                title="Download file"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </DashboardLayout>
   );
 }

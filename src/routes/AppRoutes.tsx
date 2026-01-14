@@ -50,7 +50,7 @@ export function AppRoutes() {
       />
 
       {/* Redirects */}
-      <Route path="/" element={<Navigate to={ROUTES.LOGIN} replace />} />
+      <Route path="/" element={<Navigate to={ROUTES.STAFF} replace />} />
 
       {/* 404 */}
       <Route path="*" element={<NotFound />} />

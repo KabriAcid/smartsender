@@ -11,7 +11,8 @@ import {
     sendMessage,
     markMessagesAsRead,
 } from '@/api/conversations.api';
-import { Message, ConversationListItem, MessageMedia } from '@/types';
+import { getStaffById } from '@/api/staff.api';
+import { Message, ConversationListItem, MessageMedia, Staff } from '@/types';
 import { formatMessageDateHeader, getInitials } from '@/utils/formatters';
 import { ArrowLeft, Phone, Video, Info } from 'lucide-react';
 
@@ -22,6 +23,7 @@ export default function ConversationPage() {
 
     const [conversation, setConversation] = useState<ConversationListItem | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
+    const [otherParticipant, setOtherParticipant] = useState<Staff | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
 
@@ -38,19 +40,51 @@ export default function ConversationPage() {
                     getConversationMessages(id),
                 ]);
 
+                let foundConversation: ConversationListItem | null = null;
+
                 if (convRes.success && convRes.data) {
-                    const found = convRes.data.find(c => c.id === id);
-                    if (found) {
-                        setConversation(found);
-                    }
+                    foundConversation = convRes.data.find(c => c.id === id) || null;
                 }
 
                 if (messagesRes.success && messagesRes.data) {
                     setMessages(messagesRes.data);
                 }
 
-                // Mark messages as read
-                await markMessagesAsRead(id, staff.id);
+                if (foundConversation) {
+                    setConversation(foundConversation);
+                    setOtherParticipant(foundConversation.otherParticipant);
+                } else if (!foundConversation && messagesRes.data && messagesRes.data.length > 0) {
+                    // Find the other participant from messages
+                    const firstMsg = messagesRes.data[0];
+                    const otherStaffId = firstMsg.senderId === staff.id
+                        ? messagesRes.data.find(m => m.senderId !== staff.id)?.senderId
+                        : firstMsg.senderId;
+
+                    if (otherStaffId) {
+                        const staffRes = await getStaffById(otherStaffId);
+                        if (staffRes.success && staffRes.data) {
+                            setOtherParticipant(staffRes.data);
+                        }
+                    }
+                } else if (!foundConversation && (!messagesRes.data || messagesRes.data.length === 0)) {
+                    // Brand new conversation with no messages - need to find the other participant
+                    // Try to get from localStorage if available
+                    const pendingConversationData = localStorage.getItem(`pending-conv-${id}`);
+                    if (pendingConversationData) {
+                        try {
+                            const data = JSON.parse(pendingConversationData);
+                            if (data.otherStaffId) {
+                                const staffRes = await getStaffById(data.otherStaffId);
+                                if (staffRes.success && staffRes.data) {
+                                    setOtherParticipant(staffRes.data);
+                                    localStorage.removeItem(`pending-conv-${id}`);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Failed to parse pending conversation data:', e);
+                        }
+                    }
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -59,13 +93,8 @@ export default function ConversationPage() {
         loadData();
     }, [id, staff]);
 
-    // Scroll to bottom on new messages
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
-
     const handleSendMessage = async (content: string, media?: MessageMedia[]) => {
-        if (!staff || !id || !content.trim() && !media?.length) return;
+        if (!staff || !id || (!content.trim() && !media?.length)) return;
 
         setIsSending(true);
 
@@ -86,7 +115,7 @@ export default function ConversationPage() {
         }
     };
 
-    if (isLoading || !conversation) {
+    if (isLoading || !otherParticipant) {
         return (
             <DashboardLayout>
                 <LoadingSpinner />
@@ -94,8 +123,7 @@ export default function ConversationPage() {
         );
     }
 
-    const otherParticipant = conversation.otherParticipant;
-    const isOnline = conversation.isOnline !== false;
+    const isOnline = conversation?.isOnline !== false;
 
     // Group messages by date
     const groupedMessages: { date: string; messages: Message[] }[] = [];

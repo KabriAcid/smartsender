@@ -107,7 +107,16 @@ export default function StaffPage() {
         try {
             const res = await getOrCreateConversation(staff.id, targetStaffId);
             if (res.success && res.data) {
-                navigate(`/conversation/${res.data.id}`);
+                // Store the other staff ID temporarily so ConversationPage can use it
+                localStorage.setItem(`pending-conv-${res.data.id}`, JSON.stringify({
+                    otherStaffId: targetStaffId
+                }));
+
+                const conversationPath = `/conversation/${res.data.id}`;
+                console.log('Navigating to:', conversationPath);
+                navigate(conversationPath);
+            } else {
+                console.error('Failed to create conversation:', res.error);
             }
         } catch (error) {
             console.error('Failed to start conversation:', error);

@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { path: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
   { path: ROUTES.STAFF, label: 'Staff', icon: Users },
+  { path: ROUTES.DASHBOARD, label: 'History', icon: LayoutDashboard },
   { path: ROUTES.PROFILE, label: 'Profile', icon: User },
 ];
 
@@ -31,7 +31,7 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-border">
-        <Link to={ROUTES.DASHBOARD}>
+        <Link to={ROUTES.STAFF}>
           <Logo size="md" showText={true} />
         </Link>
       </div>
