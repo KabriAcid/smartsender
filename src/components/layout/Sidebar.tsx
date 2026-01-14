@@ -28,7 +28,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex-col hidden xl:flex">
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <Link to={ROUTES.STAFF}>
