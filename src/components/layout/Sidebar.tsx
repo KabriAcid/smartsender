@@ -3,10 +3,11 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { getInitials } from '@/utils/formatters';
 import { ROUTES } from '@/utils/constants';
-import { 
-  LayoutDashboard, 
-  FolderOpen, 
-  User, 
+import { Logo } from '@/components/Logo';
+import {
+  LayoutDashboard,
+  FolderOpen,
+  User,
   LogOut,
   Shield
 } from 'lucide-react';
@@ -31,14 +32,8 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-border">
-        <Link to={ROUTES.DASHBOARD} className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <Shield className="w-6 h-6 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-foreground">SmartSender</h1>
-            <p className="text-xs text-muted-foreground">Secure File Sharing</p>
-          </div>
+        <Link to={ROUTES.DASHBOARD}>
+          <Logo size="md" showText={true} />
         </Link>
       </div>
 
@@ -53,11 +48,10 @@ export function Sidebar() {
               <li key={item.path}>
                 <Link
                   to={item.path}
-                  className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
-                    isActive
+                  className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${isActive
                       ? 'text-foreground bg-muted'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                  }`}
+                    }`}
                 >
                   {isActive && (
                     <motion.div
@@ -94,7 +88,7 @@ export function Sidebar() {
             </div>
           </div>
         )}
-        
+
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors duration-200"

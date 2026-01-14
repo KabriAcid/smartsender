@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { ROUTES } from "@/utils/constants";
 
 const NotFound = () => {
@@ -11,6 +12,9 @@ const NotFound = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-md"
       >
+        <div className="mb-8">
+          <Logo size="lg" className="justify-center" />
+        </div>
         <div className="text-8xl font-bold text-foreground mb-4">404</div>
         <h1 className="text-2xl font-semibold text-foreground mb-2">
           Page not found

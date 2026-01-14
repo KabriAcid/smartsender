@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
+import { Logo } from '@/components/Logo';
 import { ROUTES } from '@/utils/constants';
 import { isValidEmail } from '@/utils/validators';
-import { Shield, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ export default function LoginPage() {
 
     try {
       const result = await login(email, password);
-      
+
       if (result.success) {
         navigate(ROUTES.DASHBOARD);
       } else {
@@ -63,14 +64,8 @@ export default function LoginPage() {
         className="hidden lg:flex lg:w-1/2 bg-foreground text-background p-12 flex-col justify-between"
       >
         <div>
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-12 h-12 bg-background rounded-lg flex items-center justify-center">
-              <Shield className="w-7 h-7 text-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">SmartSender</h1>
-              <p className="text-sm opacity-70">Secure File Sharing</p>
-            </div>
+          <div className="mb-16">
+            <Logo size="lg" showText={true} className="invert" />
           </div>
 
           <div className="max-w-md">
@@ -98,14 +93,8 @@ export default function LoginPage() {
       >
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-12">
-            <div className="w-10 h-10 bg-foreground rounded-lg flex items-center justify-center">
-              <Shield className="w-6 h-6 text-background" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">SmartSender</h1>
-              <p className="text-xs text-muted-foreground">Secure File Sharing</p>
-            </div>
+          <div className="lg:hidden mb-12">
+            <Logo size="md" showText={true} />
           </div>
 
           <div className="mb-8">
